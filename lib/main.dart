@@ -55,7 +55,7 @@ class _RedditWritingPromptsState extends State<RedditWritingPrompts> {
               icon: Icon(Icons.favorite_border),
               onPressed: () {
                 setState(() {
-                  _period='Saved';
+                  _period = 'Saved';
                   _listFuture = RedditPost().getSavedPostList();
                 });
               }),
@@ -73,7 +73,6 @@ class _RedditWritingPromptsState extends State<RedditWritingPrompts> {
                 value: 3,
                 child: Text("Monthly"),
               ),
-              
             ],
             onSelected: (value) {
               if (value == 1) {
@@ -88,7 +87,7 @@ class _RedditWritingPromptsState extends State<RedditWritingPrompts> {
                 _period = 'month';
                 _select(_period);
               }
-              
+
               Fluttertoast.showToast(
                   msg: 'Top of the ' + _period,
                   toastLength: Toast.LENGTH_SHORT,
@@ -99,7 +98,6 @@ class _RedditWritingPromptsState extends State<RedditWritingPrompts> {
                   fontSize: 16.0);
             },
           )
-          
         ],
       ),
       body: FutureBuilder(
@@ -180,12 +178,12 @@ class _RedditWritingPromptsState extends State<RedditWritingPrompts> {
                 })));
   }
 
-  // one row from list of stories
+  /// one row from list of prompts
   Widget _buildRow(RedditPost post, int index, postList) {
     return Container(
         child: ListTile(
       title: Text(
-        post.title,
+        post.title.replaceAll('[WP] ', ''),
       ),
       subtitle: Column(
         children: <Widget>[
@@ -204,86 +202,93 @@ class _RedditWritingPromptsState extends State<RedditWritingPrompts> {
     ));
   }
 
-  // page with story and large header
+  /// page with story and large header
   void _pushStory(RedditPost post) {
     Navigator.of(context).push(MaterialPageRoute<void>(
       builder: (BuildContext context) {
-        return Scaffold(
-          // appBar: AppBar(
-          //   title: Text("Story"),
-          // ),
-          // body: _buildStory(_redditList[index].url),
-          body: NestedScrollView(
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              return <Widget>[
-                SliverAppBar(
-                  expandedHeight: 200.0,
-                  floating: false,
-                  pinned: true,
-                  backgroundColor: Colors.grey[850],
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Container(
-                        margin: const EdgeInsets.fromLTRB(15, 80, 15, 9),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              post.title,
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            if (post.awards != 0)
-                              _printAwards(post.awards, size: 12),
-                            Row(
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle(
+              statusBarColor: Colors.grey[900],
+            ),
+            child: Scaffold(
+              // appBar: AppBar(
+              //   title: Text("Story"),
+              // ),
+              // body: _buildStory(_redditList[index].url),
+              body: NestedScrollView(
+                headerSliverBuilder:
+                    (BuildContext context, bool innerBoxIsScrolled) {
+                  return <Widget>[
+                    SliverAppBar(
+                      expandedHeight: 200.0,
+                      floating: false,
+                      pinned: false,
+                      backgroundColor: Colors.grey[850],
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: Container(
+                            margin: const EdgeInsets.fromLTRB(15, 80, 15, 9),
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                RichText(
-                                  text: TextSpan(
-                                      text: 'Score: ',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                      children: <TextSpan>[
-                                        TextSpan(
-                                            text: post.score.toString(),
-                                            style: TextStyle(
-                                                color: post.score >
-                                                        10000 // high score
-                                                    ? Color(
-                                                        0xFFff5733) // upvote color
-                                                    : null,
-                                                fontWeight: FontWeight.normal)),
-                                      ]),
+                                Text(
+                                  post.title,
+                                  style: TextStyle(fontSize: 14),
                                 ),
-                                RichText(
-                                  text: TextSpan(
-                                      text: 'Date: ',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                      children: <TextSpan>[
-                                        TextSpan(
-                                            text: DateFormat('dd-MM-yyyy ')
-                                                .format(DateTime
-                                                    .fromMillisecondsSinceEpoch(
-                                                        post.date.toInt() *
-                                                            1000))
-                                                .toString(),
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.normal)),
-                                      ]),
+                                if (post.awards != 0)
+                                  _printAwards(post.awards, size: 12),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    RichText(
+                                      text: TextSpan(
+                                          text: 'Score: ',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                                text: post.score.toString(),
+                                                style: TextStyle(
+                                                    color: post.score >
+                                                            10000 // high score
+                                                        ? Color(
+                                                            0xFFff5733) // upvote color
+                                                        : null,
+                                                    fontWeight:
+                                                        FontWeight.normal)),
+                                          ]),
+                                    ),
+                                    RichText(
+                                      text: TextSpan(
+                                          text: 'Date: ',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                                text: DateFormat('dd-MM-yyyy ')
+                                                    .format(DateTime
+                                                        .fromMillisecondsSinceEpoch(
+                                                            post.date.toInt() *
+                                                                1000))
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.normal)),
+                                          ]),
+                                    ),
+                                  ],
                                 ),
                               ],
-                            ),
-                          ],
-                        )),
-                  ),
+                            )),
+                      ),
+                    ),
+                  ];
+                },
+                body: Center(
+                  child: _buildStory(post),
                 ),
-              ];
-            },
-            body: Center(
-              child: _buildStory(post),
-            ),
-          ),
-        );
+              ),
+            ));
       },
     ));
   }
